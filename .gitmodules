@@ -1,0 +1,3 @@
+[submodule "src/ext/iceslprinters"]
+	path = src/ext/iceslprinters
+	url = https://github.com/shapeforge/icesl-printers

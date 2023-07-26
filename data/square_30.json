@@ -1,0 +1,12 @@
+{
+    "nozzle_width": 0.4,
+    "svg_path":             "data/svg/square_30.svg",
+    "line_field_path":      "data/png/parallel_mode.png",
+    "line_mode_field_path": "data/png/constrained_mode.png",
+    "perimeter_count": 1,
+    "alignment_iter_per_level": 32,
+    "seed": 1,
+    "force_sdf_computation": false,
+    "repulse_curves": true,
+    "layer_height_rt_nozzle_width": 0.5
+}

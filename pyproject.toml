@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cglib"
+version = "0.1.0"
+authors = [
+    {name = "Xavier Chermain", email = "xavier.chermain@inria.fr"},
+]
+description = "Computer Graphics Library"
+readme = "README.md"
+requires-python = ">=3.9, <3.11"
+keywords = ["graphics", "fabrication"]
+license = {file = "LICENSE"}
+dependencies = [
+    "jax",
+    "svgpathtools",
+    "pyvista",
+    "Pillow",
+]

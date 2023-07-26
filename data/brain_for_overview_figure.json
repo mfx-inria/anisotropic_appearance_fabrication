@@ -1,0 +1,12 @@
+{
+    "nozzle_width": 1.6,
+    "svg_path":             "data/svg/brain.svg",
+    "line_field_path":      "data/png/brain_line.png",
+    "line_mode_field_path": "data/png/brain_overview_line_mode.png",
+    "perimeter_count": 1,
+    "alignment_iter_per_level": 32,
+    "seed": 2,
+    "force_sdf_computation": true,
+    "repulse_curves": true,
+    "layer_height_rt_nozzle_width": 0.5
+}

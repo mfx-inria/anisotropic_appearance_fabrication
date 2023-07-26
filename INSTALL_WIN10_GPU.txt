@@ -1,0 +1,31 @@
+# For windows users
+
+# Install c++ visual studio 2022 (needed by CUDA)
+# Install Cuda toolkit 11.7; Check installation with `nvcc -V`
+# Install Cuda Neural Network (CUDnn);
+# Check https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html
+# for installation information; Need zlib package from ZLIB DLL (add to PATH).
+# Add the NVIDIA cuDNN directory path to the PATH environment variable
+# Also put its bin folder in the PATH.
+
+# Create an environment for the project
+# Target Python 3.10 because of
+# https://github.com/cloudhan/jax-windows-builder/issues/22
+conda create --name fdm_aa python=3.10
+# Activate it
+conda activate fdm_aa
+# Get the pip python wheel
+# jaxlib-0.3.17+cuda11.cudnn82-cp310-cp310-win_amd64.whl
+# located at
+# https://whls.blob.core.windows.net/unstable/index.html
+# Perform a manual installation
+# https://github.com/cloudhan/jax-windows-builder#the-manual-solution
+# pip install jaxlib-0.3.17+cuda11.cudnn82-cp310-cp310-win_amd64.whl
+pip install .\data\whl\jaxlib-0.3.17+cuda11.cudnn82-cp310-cp310-win_amd64.whl
+# Install jax. The version must be equal to the one of jaxlib
+pip install jax==0.3.17
+
+# After the previous step, try
+# to install the computer graphics library (cglib) in editable mode
+# All dependencies will come with
+pip install -e .
