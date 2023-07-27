@@ -40,7 +40,7 @@ The generated continuous trajectory is then given to a filament printer, which f
 
 ## Clone the Repository
 
-To clone the code together with the [`iceslprinters`](https://github.com/shapeforge/icesl-printers) dependency, be sure to use the `--recursive`` flag when cloning the repository, i.e.
+To clone the code together with the [`iceslprinters`](https://github.com/shapeforge/icesl-printers) dependency, be sure to use the `--recursive` flag when cloning the repository, i.e.
 ```
 git clone --recursive https://github.com/mfx-inria/anisotropic_appearance_fabrication.git
 ```
@@ -101,7 +101,7 @@ Our code is written with JAX, which is designed for high-performance numerical c
 
 The execution time of the scripts can be considered long. For example, on Ubuntu LTS 22.04 with a CPU backend (AMD Ryzen 9 7950X 32 threads), on Windows 10 with a GPU backend (NVIDIA RTX 2080 with Intel Core i7-4770K CPU) and on MaxOS with CPU backend, the execution times of the scripts `generate_results_figure_1.sh` and `generate_all_results.sh` are around 250 seconds and 35 minutes, *resp*.
 
-JAX compiles functions to speed the execution, but the compilation time is linear with the data size, as shown by the paper [Dr.Jit: A Just-In-Time Compiler for Differentiable Rendering](https://rgl.s3.eu-central-1.amazonaws.com/media/papers/Jakob2022DrJit.pdf), Figure 17, top right. In addition, JAX recompiles functions each time the code is launched because the compilation cache is still an experimental feature: [https://github.com/google/jax/discussions/13736](https://github.com/google/jax/discussions/13736). See the logs in [`data/log`] to know the execution and compilation times.
+JAX compiles functions to speed the execution, but the compilation time is linear with the data size, as shown by the paper [Dr.Jit: A Just-In-Time Compiler for Differentiable Rendering](https://rgl.s3.eu-central-1.amazonaws.com/media/papers/Jakob2022DrJit.pdf), Figure 17, top right. In addition, JAX recompiles functions each time the code is launched because the compilation cache is still an experimental feature: [https://github.com/google/jax/discussions/13736](https://github.com/google/jax/discussions/13736). See the logs in [`data/log`](data/log) to know the execution and compilation times.
 
 ## Warnings and Errors
 
@@ -178,7 +178,8 @@ year = {2023},
 volume = {42},
 number = {4},
 doi = {10.1145/3592412},
-journal = {ACM Transactions on Graphics (Proceedings of SIGGRAPH)},
+articleno = {68},
+journal = {ACM Trans. Graph. (Proc. SIGGRAPH)},
 numpages = {13}
 }
 ```
