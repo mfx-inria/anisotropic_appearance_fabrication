@@ -42,7 +42,7 @@ python tools/fill_2d_shape.py data/people.json
 python tools/togcode.py data/people.json CR10S_Pro
 python tools/tosvg.py data/people.json cycle data/svg/cycle/people.svg
 
-# Figure 12, top left
+# Figure 12, top right
 python tools/fill_2d_shape.py data/brain.json
 python tools/togcode.py data/brain.json CR10S_Pro
 python tools/tosvg.py data/brain.json cycle data/svg/cycle/brain.svg

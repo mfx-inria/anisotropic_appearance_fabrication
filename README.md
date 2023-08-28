@@ -16,6 +16,10 @@ This repository contains the source code associated with the paper:
 - [Article](https://xavierchermain.github.io/data/pdf/Chermain2023Orientable.pdf)
 - [Supplemental Video](https://youtu.be/aUDzZrlRnNU)
 
+Our code has the Replicability Stamp:
+
+[![](https://www.replicabilitystamp.org/logo/Reproducibility-small.png)](http://www.replicabilitystamp.org#https-github-com-mfx-inria-anisotropic-appearance-fabrication)
+
 # Fill Space With Orientable Cycle - Our Algorithm
 
 ![Overview image](data/png/doc/overview.png)
@@ -35,6 +39,7 @@ The generated continuous trajectory is then given to a filament printer, which f
 - [2D Shape Representation](#2d-shape-representation)
 - [How to Cite](#how-to-cite)
 - [License](#license)
+- [Acknowledgments](#acknowledgments)
 
 # Installation
 
@@ -58,9 +63,9 @@ The code is written in Python 3.10, and it depends on
 - [Pillow](https://github.com/python-pillow/Pillow) 9.5, and
 - the local library [`src/cglib`](src/cglib).
 
-The versions specified before were used for producing the paper's results but are not strictly needed.
+The versions specified before were used for producing the paper's results. The code may not work with Python < 3.10. A test with Python 3.6.8 was unsuccessful because `pip install --user -e .`` required a `setuptools`` version >= 64, and Python 3.6.8 only supports setuptools 59.6.0 at most.
 
-You can use `pip` to install the dependencies:
+You can use `pip` to install the dependencies. The following commands should be run from the repository root directory:
 ```
 pip install --user --upgrade pip
 pip install --user --upgrade "jax[cpu]"
@@ -82,7 +87,7 @@ to install the Python environment. On Windows, it did not work on our machine, b
 
 # Results Reproduction
 
-You can reproduce either the figure 1 or all the results of the [paper](https://xavierchermain.github.io/data/pdf/Chermain2023Orientable.pdf) on Windows by running either the script `generate_results_figure_1.ps1` or the script `generate_all_results.ps1`, *resp*. For Linux users, use `generate_results_figure_1.sh` or `generate_all_results.sh`, *resp*.
+You can reproduce either the figure 1 or all the results of the [paper](https://xavierchermain.github.io/data/pdf/Chermain2023Orientable.pdf) on Windows by running either the script `generate_results_figure_1.ps1` or the script `generate_all_results.ps1`, *resp*. Run the command `Set-ExecutionPolicy -ExecutionPolicy Bypass` command to make the `.ps1` script runnable. By default, scripts cannot be run on PowerShell. For Linux users, use `generate_results_figure_1.sh` or `generate_all_results.sh`, *resp*.
 
 The scripts generate the oriented cycles as SVG files in [`data/svg/cycle`](data/svg/cycle) and as G-code files in [`data/gcode`](data/gcode). You can visualize and check the paths in the generated G-code using [Craftware](https://craftbot.com/craftware/legacy) or the online visualizer of [IceSl](https://icesl.loria.fr/webprinter/). The G-codes are generated for a modified Creality3D CR-10S Pro with a BLTouch and direct drive extruder. The firmware used to print the results is [Klipper](https://www.klipper3d.org/). We recommend using an extrusion factor of 0.9 % and a filament printer with a [direct drive extruder](https://en.wikipedia.org/wiki/3D_printer_extruder), as the trajectory has a varying length.
 
@@ -99,7 +104,7 @@ Our code is written with JAX, which is designed for high-performance numerical c
 
 ## Long Running Times
 
-The execution time of the scripts can be considered long. For example, on Ubuntu LTS 22.04 with a CPU backend (AMD Ryzen 9 7950X 32 threads), on Windows 10 with a GPU backend (NVIDIA RTX 2080 with Intel Core i7-4770K CPU) and on MaxOS with CPU backend, the execution times of the scripts `generate_results_figure_1.sh` and `generate_all_results.sh` are around 250 seconds and 35 minutes, *resp*.
+The execution time of the scripts can be considered long. For example, on Ubuntu LTS 22.04 with a CPU backend (AMD Ryzen 9 7950X 32 threads), on Windows 10 with a GPU backend (NVIDIA RTX 2080 with Intel Core i7-4770K CPU) and on MaxOS with CPU backend, the execution times of the scripts `generate_results_figure_1.sh` and `generate_all_results.sh` are around 250 seconds and 35 minutes, *resp*. With an AMD Ryzen Threadripper 2990WX 32-Core/64 threads CPU, the total runtime was 57 min for `generate_all_results.ps1`.
 
 JAX compiles functions to speed the execution, but the compilation time is linear with the data size, as shown by the paper [Dr.Jit: A Just-In-Time Compiler for Differentiable Rendering](https://rgl.s3.eu-central-1.amazonaws.com/media/papers/Jakob2022DrJit.pdf), Figure 17, top right. In addition, JAX recompiles functions each time the code is launched because the compilation cache is still an experimental feature: [https://github.com/google/jax/discussions/13736](https://github.com/google/jax/discussions/13736). See the logs in [`data/log`](data/log) to know the execution and compilation times.
 
@@ -188,3 +193,7 @@ numpages = {13}
 
 The source code is under the BSD 3-Clause "New" or "Rivised" license. See
 [LICENSE](LICENSE) for more details.
+
+# Acknowledgments
+
+We thank the reviewers of the [Graphics Replicability Stamp Initiative (GRSI)](https://www.replicabilitystamp.org/) for their valuable comments improving the replicability of our method.
