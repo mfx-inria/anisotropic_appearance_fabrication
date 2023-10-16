@@ -8,13 +8,32 @@ import cglib.fdm_aa
 import cglib.polyline
 
 
+class PrinterParameters:
+    def __init__(self):
+        self.printer_profile = None
+        self.nozzle_width = None
+        self.speed = None
+        self.flow_multiplier = None
+        self.bed_temp = None
+        self.extruder_temp = None
+        self.layer_height = None
+        self.filament_diameter = None
+        self.filament_priming = None
+        self.z_lift = None
+        self.total_extrusion_length = None
+
+    def get_feedrate(self) -> int:
+        # mm/s to mm/min
+        return int(self.speed * 60)
+
+
 def compute_extrusion_length(width: float,
-            local_length: float,
-            filament_diameter: float,
-            layer_height: float,
-            flow_multiplier: float) -> float:
+                             local_length: float,
+                             filament_diameter: float,
+                             layer_height: float,
+                             flow_multiplier: float) -> float:
     """Compute the length of the filament to extrude.
-    
+
     Notes
     -----
     https://3dprinting.stackexchange.com/questions/6289/how-is-the-e-argument-calculated-for-a-given-g1-command
@@ -27,7 +46,8 @@ def compute_extrusion_length(width: float,
 def features_get_bed_size_xy(features_str: str) -> np.ndarray:
 
     bed_circular = features_str.find("bed_circular  = true") != -1
-    bed_circular = bed_circular or features_str.find("bed_circular = true") != -1
+    bed_circular = bed_circular or features_str.find(
+        "bed_circular = true") != -1
     if not bed_circular:
         # The bed is not circular
 
@@ -63,6 +83,58 @@ def features_origin_is_bed_center(features_str: str) -> np.ndarray:
     origin_is_bed_center = index != -1 or origin_is_bed_center
 
     return origin_is_bed_center
+
+
+def travel(point_start: np.ndarray, point_end: np.ndarray, printer_param: PrinterParameters) -> str:
+
+    point_im1_z_lifted = point_start[2] + printer_param.z_lift
+    point_im1_z_lifted_str = f"{point_im1_z_lifted:.6f}"
+
+    point_x_im1_str = f"{point_start[0]:.3f}"
+    point_y_im1_str = f"{point_start[1]:.3f}"
+    point_x_i_str = f"{point_end[0]:.3f}"
+    point_y_i_str = f"{point_end[1]:.3f}"
+    point_z_i_str = f"{point_end[2]:.6f}"
+    # Retract
+    travel_str = ";retract\n"
+    printer_param.total_extrusion_length -= printer_param.filament_priming
+    total_extrusion_length_str = f"{printer_param.total_extrusion_length:.6f}"
+    travel_str += f"G1 F2700 E{total_extrusion_length_str}\n"
+    # Travel
+    travel_str += ";travel\n"
+    travel_str += f"G0 F600 X{point_x_im1_str} Y{point_y_im1_str} Z{point_im1_z_lifted_str}\n"
+    travel_str += f"G0 F{printer_param.get_feedrate()} X{point_x_i_str} Y{point_y_i_str} Z{point_im1_z_lifted_str}\n"
+    travel_str += f"G0 F600 X{point_x_i_str} Y{point_y_i_str} Z{point_z_i_str}\n"
+    # Prime
+    travel_str += ";prime\n"
+    printer_param.total_extrusion_length += printer_param.filament_priming
+    total_extrusion_length_str = f"{printer_param.total_extrusion_length:.6f}"
+    travel_str += f"G1 F2700 E{total_extrusion_length_str}\n"
+    return travel_str
+
+
+def travel_to(point_end: np.ndarray, 
+              printer_param: PrinterParameters, 
+              prime: bool = True) -> str:
+
+    point_x_i_str = f"{point_end[0]:.3f}"
+    point_y_i_str = f"{point_end[1]:.3f}"
+    point_z_i_str = f"{point_end[2]:.6f}"
+    # Retract
+    travel_str = ";retract\n"
+    printer_param.total_extrusion_length -= printer_param.filament_priming
+    total_extrusion_length_str = f"{printer_param.total_extrusion_length:.6f}"
+    travel_str += f"G1 F2700 E{total_extrusion_length_str}\n"
+    # Travel
+    travel_str += ";travel\n"
+    travel_str += f"G0 F{printer_param.get_feedrate()} X{point_x_i_str} Y{point_y_i_str} Z{point_z_i_str}\n"
+    if prime:
+        # Prime
+        travel_str += ";prime\n"
+        printer_param.total_extrusion_length += printer_param.filament_priming
+        total_extrusion_length_str = f"{printer_param.total_extrusion_length:.6f}"
+        travel_str += f"G1 F2700 E{total_extrusion_length_str}\n"
+    return travel_str
 
 
 def run():
@@ -119,21 +191,39 @@ def run():
         help="The filament diameter of the filament used by the printer. Default: 1.75 mm.",
         type=float,
         default=1.75)
+    parser.add_argument(
+        "-fp",
+        "--filament_priming",
+        help="Retraction setting. Between 0.4mm and 0.8mm of retract/prime for direct-drive setup, between 3mm and 6mm for bowden (stock) setup. Default: 0.4 mm.",
+        type=float,
+        default=0.4)
+    parser.add_argument(
+        "-zl",
+        "--z_lift",
+        help="Distance to move the printhead up (or the build plate down), after each retraction, right before a travel move takes place. Default: 0.4",
+        type=float,
+        default=0.4)
     
     args = parser.parse_args()
 
     input_param_filename = args.input_filename
     printer_profile = args.printer_profile
 
-    nozzle_width = args.nozzle_width
-    speed = args.speed
-    flow_multiplier = args.flow_multiplier
-    layer_count = args.layer_count
-    bed_temp = args.bed_temp
-    extruder_temp = args.extruder_temp
-    layer_height = args.layer_height
-    filament_diameter = args.filament_diameter
+    printer_param = PrinterParameters()
 
+    printer_param.nozzle_width = args.nozzle_width
+    printer_param.speed = args.speed
+    printer_param.flow_multiplier = args.flow_multiplier
+    printer_param.bed_temp = args.bed_temp
+    printer_param.extruder_temp = args.extruder_temp
+    printer_param.layer_height = args.layer_height
+    printer_param.filament_diameter = args.filament_diameter
+    printer_param.filament_priming = args.filament_priming
+    printer_param.z_lift = args.z_lift
+
+    layer_count = args.layer_count
+
+    # Should remove dependency to cglib.fdm_aa
     parameters = cglib.fdm_aa.Parameters()
     parameters.load(input_param_filename)
 
@@ -184,12 +274,15 @@ def run():
     origin_is_bed_center = features_origin_is_bed_center(printer_str)
 
     # Put user defined parameters in the header
-    header_str = header_str.replace("<HBPTEMP>", str(int(bed_temp)))
-    header_str = header_str.replace("<TOOLTEMP>", str(int(extruder_temp)))
+    header_str = header_str.replace("<HBPTEMP>", str(int(printer_param.bed_temp)))
+    header_str = header_str.replace("<TOOLTEMP>", str(int(printer_param.extruder_temp)))
     header_str = header_str.replace("<BEDLVL>", "G0 F6200 X0 Y0")
+    header_str = header_str.replace("<NOZZLE_DIAMETER>", str(printer_param.nozzle_width))
+    header_str = header_str.replace("<ACCELERATIONS>", "")
+    header_str = header_str.replace("<FILAMENT>", "0.08")
 
     # mm/s to mm/min
-    feedrate = int(speed * 60.)
+    feedrate = int(printer_param.speed * 60.)
     # Total extrusion length
     total_extrusion_length = 0.0
 
@@ -227,9 +320,9 @@ def run():
                     extrusion_length = compute_extrusion_length(
                         width_i,
                         dist_pi_im1,
-                        filament_diameter,
+                        printer_param.filament_diameter,
                         layer_height,
-                        flow_multiplier)
+                        printer_param.flow_multiplier)
                     total_extrusion_length += extrusion_length
                     total_extrusion_length_str = f"{total_extrusion_length:.6f}"
                     f.write(f"G1 F{feedrate} X{point_x_str} Y{point_y_str} Z{layer_height_i_str} E{total_extrusion_length_str}\n")

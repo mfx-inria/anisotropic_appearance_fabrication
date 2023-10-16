@@ -181,7 +181,7 @@ def compute_nozzle_width_derived_parameters(
     period = nozzle_width * 2.
     frequency = 1. / period
     domain_grid_points_perturbation_width = domain_grid_cells_width * 0.1
-    min_width = 0.75 * nozzle_width
+    min_width = 0.5 * nozzle_width
     min_radius = min_width * 0.5
     max_width = 2. * nozzle_width
     max_radius = max_width * 0.5

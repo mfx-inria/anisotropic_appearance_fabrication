@@ -151,6 +151,30 @@ def image_create_from_png_1channel_8bits(
     return jax.device_put(Image(pix, wrap_mode), device)
 
 
+def image_create_from_data(
+        data: jnp.ndarray,
+        wrap_mode: ImageWrap) -> Image:
+    """Create an image texture from data.
+
+    Parameters
+    ----------
+    data : jnp.ndarray
+        The data. Shape must be (y, x), where y and x are the number of data
+        element along the y and x axis, respectively.
+    wrap_mode : ImageWrap
+        The wrap mode of the image texture.
+    device : Device
+        The image texture will reside on `device`. Available devices can be
+        retrieved via `jax.devices()`.
+
+    Returns
+    -------
+    Image
+        Each texel contains each data element.
+    """
+    return Image(data, wrap_mode)
+
+
 def image_eval_from_discrete_coordinates(s: jnp.ndarray, tex: Image) -> Any:
     """Evaluate the image texture at a discrete coordinate.
 

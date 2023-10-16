@@ -147,16 +147,95 @@ def aabb(grid: Grid) -> AABB:
         grid.cell_sides_length)
 
 
-def roundup_power_of_2(grid2: Grid) -> Grid:
-    grid_sqr_side_cell_count = roundup_power_of_2(grid2.cell_ndcount[0])
-    grid_sqr_side_cell_count = max(
-        grid_sqr_side_cell_count, roundup_power_of_2(grid2.cell_ndcount[1]))
+def line_count(cell_ndcount : np.ndarray) -> int:
+    """
+    This function returns the sum of vertical and horizontal ligns of a 2D
+    grid with specified column and row counts.
 
-    return Grid(
-        jnp.full((2,), grid_sqr_side_cell_count),
-        grid2.origin,
-        grid2.cell_sides_length)
+    grid2_cell_ndcount : numpy.ndarray
+        The number of columns and rows of the grid. Shape : 2.
 
+    Return
+    ------
+    int
+
+    The sum of the number of rows and columns of the 2D grid.
+    """
+    n = cell_ndcount
+    x_n = n[0]
+    y_n = n[1]
+    return x_n + 1 + y_n + 1
+
+
+def line2_point_component(grid2 : Grid, line_index: int, point_index: int, component_index: int) -> float:
+    """
+    This functions returns the component of the point of the line corresponding
+    to the indices and grid specified.
+
+    Parameters
+    ----------
+    grid2 : Grid
+        A 2D grid, where each attribute is a 1D array with size 2.
+    line_index: int
+        The index of the line
+    point_index: int
+        The index of the point, given a line
+    component_index
+        The index of the component, given a point and a line
+
+    Return
+    ------
+    float
+
+    Return the component of the point of the line corresponding
+    to the indices and grid specified.
+    """
+    # Give an alias to grid attributes
+    o = grid2.origin
+    length = grid2.cell_sides_length
+    n = grid2.cell_ndcount
+
+    p_max = o + n * length
+
+    is_vertical_line = line_index <= n[0]
+    is_horizontal_line = jnp.logical_not(is_vertical_line)
+    is_x_component = component_index == 0
+    is_y_component = jnp.logical_not(is_x_component)
+    is_bottom_point = point_index == 0
+    is_left_point = point_index == 0
+
+    # l is the return value
+    l = 0.
+    # if is_vertical_line and is_x_component:
+    is_vx = jnp.logical_and(is_vertical_line, is_x_component)
+    res_vx = o[0] + line_index * length
+    l = jnp.where(is_vx, res_vx, l)
+
+    is_vyb = jnp.logical_and(is_vertical_line, is_y_component)
+    is_vyb = jnp.logical_and(is_bottom_point, is_vyb)
+    res_vyb = o[1]
+    l = jnp.where(is_vyb, res_vyb, l)
+
+    is_vyt = jnp.logical_and(is_vertical_line, is_y_component)
+    is_vyt = jnp.logical_and(jnp.logical_not(is_bottom_point), is_vyt)
+    res_vyt = p_max[1]
+    l = jnp.where(is_vyt, res_vyt, l)
+
+    is_hxl = jnp.logical_and(is_horizontal_line, is_x_component)
+    is_hxl = jnp.logical_and(is_left_point, is_hxl)
+    res_hxl = o[0]
+    l = jnp.where(is_hxl, res_hxl, l)
+
+    is_hxr = jnp.logical_and(is_horizontal_line, is_x_component)
+    is_hxr = jnp.logical_and(jnp.logical_not(is_left_point), is_hxr)
+    res_hxr = p_max[0]
+    l = jnp.where(is_hxr, res_hxr, l)
+
+    is_hy = jnp.logical_and(is_horizontal_line, is_y_component)
+    res_hy = o[1] + (line_index - n[0] - 1) * length
+    l = jnp.where(is_hy, res_hy, l)
+    
+    return l
 
 def roundup_power_of_2(grid2: Grid) -> Grid:
     grid_sqr_side_cell_count = math_roundup_power_of_2(grid2.cell_ndcount[0])
