@@ -243,12 +243,12 @@ def run():
 
     # If the user does not specify the nozzle width,
     # use by default the one in the input file
-    if nozzle_width is None:
-        nozzle_width = parameters.nozzle_width
+    if printer_param.nozzle_width is None:
+        printer_param.nozzle_width = parameters.nozzle_width
 
     cycle_polyline = cglib.polyline.load(parameters.cycle_polyline_filename)
-    if layer_height is None:
-        layer_height = cycle_polyline.data[0, 1]
+    if printer_param.layer_height is None:
+        printer_param.layer_height = cycle_polyline.data[0, 1]
 
     gcode_filename = parameters.gcode_filename
 
@@ -301,7 +301,7 @@ def run():
         cycle_polyline_2dpoint: np.ndarray = cycle_polyline.point[0]
         cycle_radius: np.ndarray = cycle_polyline.point_data[0]
         for layer_index in range(layer_count):
-            layer_height_i = (layer_index + 1) * layer_height
+            layer_height_i = (layer_index + 1) * printer_param.layer_height
             layer_height_i_str = f"{layer_height_i:.6f}"
             for point_index in range(cycle_polyline_2dpoint.shape[0]):
                 point_i = cycle_polyline_2dpoint[point_index]
@@ -321,7 +321,7 @@ def run():
                         width_i,
                         dist_pi_im1,
                         printer_param.filament_diameter,
-                        layer_height,
+                        printer_param.layer_height,
                         printer_param.flow_multiplier)
                     total_extrusion_length += extrusion_length
                     total_extrusion_length_str = f"{total_extrusion_length:.6f}"
