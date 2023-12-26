@@ -40,6 +40,18 @@ def cycles_to_svg(input_param_filename, svg_out_filename):
     # Load svg paths to get svg attributes
     _, _, svg_attributes = svg2paths(
         parameters.svg_path, return_svg_attributes=True)
+    
+    # The shape domain size is determined by the SVG width and heigh
+    # -2: remove the unit
+    svg_width = float(svg_attributes['width'][:-2])
+    svg_height = float(svg_attributes['height'][:-2])
+    # [x, y]
+    shape_domain_size = jnp.array([svg_width, svg_height])
+
+    trans = transform.translate(jnp.array([0., -shape_domain_size[1]*0.5]))
+    scale = transform.scale(jnp.array([1., -1.]))
+    upside_down_to_right_side_up = jnp.linalg.inv(trans) @ scale @ trans
+    upside_down_to_right_side_up = jax.device_put(upside_down_to_right_side_up, device_cpu)
 
     cycles = cglib.cycle.load(parameters.cycles_filename)
     cycles = jax.device_put(cycles, device_cpu)
@@ -50,7 +62,9 @@ def cycles_to_svg(input_param_filename, svg_out_filename):
     paths = []
 
     for i in range(cycles.cycle_count):
-        cycle_polyline_2dpoint = np.array(polylines.point[i])
+        polylines_point_i = jax.jit(jax.vmap(transform.apply_to_point, (None, 0)))(
+        upside_down_to_right_side_up, polylines.point[i])
+        cycle_polyline_2dpoint = np.array(polylines_point_i)
         point_count_i = int(polylines.data[i, 1])
         cycle_polyline_2dpoint = cycle_polyline_2dpoint[:point_count_i, :]
 
