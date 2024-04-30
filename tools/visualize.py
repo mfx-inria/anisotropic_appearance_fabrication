@@ -69,35 +69,39 @@ if __name__ == "__main__":
         parameters.grid_sines_aligned_filename)
     grid_sines_aligned_grid = grid_sines_aligned.grid
 
-    # Get the cycle polyline
-    cycle_polyline = cglib.polyline.load(parameters.cycle_polyline_filename)
-
-    # Get the number of cycles
-    cycles = cglib.cycle.load(parameters.cycles_filename)
-    print(f"Cycle count before stitching: {cycles.cycle_count}")
+    # Get the shape contour
     boundary_polydata = pv.read(parameters.boundary_polydata_filename)
 
-    # Convert the cycle to pyvista polyline
-    cycle_polyline_pv = pv.PolyData()
-    cycle_polyline_2dpoint: np.ndarray = cycle_polyline.point[0]
-    layer_height = cycle_polyline.data[0, 1]
-    layer_height_array = np.full(
-        (cycle_polyline_2dpoint.shape[0], 1),
-        layer_height)
-    cycle_polyline_pv.points = np.concatenate(
-        (cycle_polyline_2dpoint, layer_height_array),
-        axis=1)
+    if args.datatosee != DataToSee.SDF.value:
 
-    cycle_polyline_pv_cells = np.arange(
-        -1, cycle_polyline_pv.n_points, dtype=np.int_)
-    cycle_polyline_pv_cells[0] = cycle_polyline_pv.n_points
+        # Get the cycle polyline
+        cycle_polyline = cglib.polyline.load(parameters.cycle_polyline_filename)
 
-    cycle_polyline_pv.lines = cycle_polyline_pv_cells
-    cycle_polyline_pv.point_data["point_id"] = np.arange(
-        cycle_polyline_pv.n_points)
-    cycle_polyline_pv.point_data["radius"] = cycle_polyline.point_data[0]
-    cycle_polyline_tube = cycle_polyline_pv.tube(
-        radius=nozzle_width_derived_params.min_radius, radius_factor=nozzle_width_derived_params.max_radius/nozzle_width_derived_params.min_radius, scalars='radius')
+        # Get the number of cycles
+        cycles = cglib.cycle.load(parameters.cycles_filename)
+        print(f"Cycle count before stitching: {cycles.cycle_count}")
+
+        # Convert the cycle to pyvista polyline
+        cycle_polyline_pv = pv.PolyData()
+        cycle_polyline_2dpoint: np.ndarray = cycle_polyline.point[0]
+        layer_height = cycle_polyline.data[0, 1]
+        layer_height_array = np.full(
+            (cycle_polyline_2dpoint.shape[0], 1),
+            layer_height)
+        cycle_polyline_pv.points = np.concatenate(
+            (cycle_polyline_2dpoint, layer_height_array),
+            axis=1)
+
+        cycle_polyline_pv_cells = np.arange(
+            -1, cycle_polyline_pv.n_points, dtype=np.int_)
+        cycle_polyline_pv_cells[0] = cycle_polyline_pv.n_points
+
+        cycle_polyline_pv.lines = cycle_polyline_pv_cells
+        cycle_polyline_pv.point_data["point_id"] = np.arange(
+            cycle_polyline_pv.n_points)
+        cycle_polyline_pv.point_data["radius"] = cycle_polyline.point_data[0]
+        cycle_polyline_tube = cycle_polyline_pv.tube(
+            radius=nozzle_width_derived_params.min_radius, radius_factor=nozzle_width_derived_params.max_radius/nozzle_width_derived_params.min_radius, scalars='radius')
 
     off_screen = False
     plotter = pv.Plotter(shape=(1, 1), off_screen=off_screen)
@@ -105,7 +109,7 @@ if __name__ == "__main__":
     if args.datatosee == DataToSee.SCALAR.value:
         scalar_field = np.load(parameters.scalar_field_filename)
 
-        scalar_field_pv = pv.UniformGrid()
+        scalar_field_pv = pv.ImageData()
         scalar_field_pv.dimensions = np.concatenate(
             (np.array(scalar_field.shape), np.array([0]))) + 1
         # The bottom left corner of the data set
@@ -116,7 +120,7 @@ if __name__ == "__main__":
             (3,), grid_sines_aligned_grid.cell_sides_length)
         # Add the data values to the cell data
         scalar_field_pv.cell_data["values"] = scalar_field.flatten()
-        plotter.add_mesh(scalar_field_pv, show_edges=True)
+        plotter.add_mesh(scalar_field_pv, show_edges=False)
 
     if args.datatosee == DataToSee.TUBE.value:
         plotter.add_mesh(cycle_polyline_tube, scalars='radius',
@@ -129,7 +133,7 @@ if __name__ == "__main__":
         parameters.create_SDF_filename(shape_domain_grid)
         shape_domain_grid_data.load(parameters.sdf_filename)
 
-        scalar_field_pv = pv.UniformGrid()
+        scalar_field_pv = pv.ImageData()
         scalar_field_pv.dimensions = np.concatenate(
             (np.array(shape_domain_grid_data.grid.cell_ndcount), np.array([0]))) + 1
         # The bottom left corner of the data set
@@ -140,12 +144,12 @@ if __name__ == "__main__":
             (3,), shape_domain_grid_data.grid.cell_sides_length)
         # Add the data values to the cell data
         scalar_field_pv.cell_data["values"] = shape_domain_grid_data.ccpj_signed_distance_from_boundary
-        plotter.add_mesh(scalar_field_pv, show_edges=True)
+        plotter.add_mesh(scalar_field_pv, show_edges=False)
 
     plotter.add_mesh(boundary_polydata, color='fbb4ae',
                      show_scalar_bar=True, show_edges=False, line_width=4)
 
     plotter.camera_position = 'xy'
     plotter.camera.zoom(1.5)
-    plotter.set_background('black')
+    plotter.set_background('white')
     plotter.show()
