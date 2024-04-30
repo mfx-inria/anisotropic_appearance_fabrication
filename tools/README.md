@@ -37,6 +37,7 @@ python tools/fill_2d_shape.py data/teaser_coarse.json
 ```
 
 If the program is stuck at step `gabor_field_value_with_mask_x took`, as in the following figure, you should have non-valid `svg` input. Please follow instructions in the [`data/svg/README.md`](../data/svg/README.md)
+
 ![The program is stuck](../data/png/doc/stuck.png)
 
 ## Input

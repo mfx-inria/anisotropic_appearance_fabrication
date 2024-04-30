@@ -17,6 +17,7 @@ We use Inkscape 1.3.2 to edit them. Be sure that the contour is a clockwise-orie
 If the orientation is incorrect, you can reverse it with Path:Reverse.
 
 A correct and incorrect orientation is shown in the following figure.
+
 ![Good and bad SDFs](../png/doc/correct_wrong_orientation.png)
 
 The `svg` width and height attributes determine the shape domain size. To resize the page to your shape, select it, then Edit:Resize Page To Selection (`Ctrl+Shift+R`).
@@ -30,4 +31,5 @@ When layers are used, Inkscape hides transformations inside the SVG file. In add
 ![Good and bad hierarchies](../png/doc/good_bad_hierarchy.png)
 
 You must force the SDF recomputation if you already computed the signed distance field with the wrong contour, like in the right part of the following figure. To do this, put `force_sdf_computation` to `true` in the `json` file. To see the SDF, use the command `python .\tools\visualize.py .\data\test.json sdf`, where `test.json` is the `json` file containing your parameters.
+
 ![Good and bad SDFs](../png/doc/good_bad_sdf.png)
