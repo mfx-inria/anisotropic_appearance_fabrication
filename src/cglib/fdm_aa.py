@@ -779,19 +779,20 @@ def init_grid_data(
     set_user_line_constraints_array = jnp.array([
         jnp.equal(case_index, 0b0001),
         jnp.equal(case_index, 0b0011)
-    ])    
+    ])
     set_user_line_constraints = jnp.logical_and(
         one_run, jnp.any(set_user_line_constraints_array))
     
     # Set user line constraints only in the infill area
+    # and where lines are constraints
     is_infill = sdf <= - perimeter_count * nozzle_width
-    is_user_line_constraint = jnp.logical_and(
-        is_infill, set_user_line_constraints)
+    line_is_constrained = jnp.logical_and(is_line_user_constrained, set_user_line_constraints)
+    line_is_constrained = jnp.logical_and(
+        is_infill, line_is_constrained)
     line = jnp.where(
-        is_user_line_constraint.reshape(-1, 1),
+        line_is_constrained.reshape(-1, 1),
         line_from_user,
         closest_boundary_normal)
-    line_is_constrained = is_user_line_constraint
     
     # If the perimeter count is not zero, constrain the lines and phase in the
     # perimeter area.

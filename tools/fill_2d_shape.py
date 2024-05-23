@@ -237,7 +237,8 @@ def run():
 
     # Init lines, phases and constraints based on inputs
     start = time.perf_counter()
-    # cglib.fdm_aa.init_grid_data(shape_domain_grid_data.ccpj_signed_distance_from_boundary,
+    # DEBUG
+    # res = cglib.fdm_aa.init_grid_data(shape_domain_grid_data.ccpj_signed_distance_from_boundary,
     #     shape_domain_grid_data.cell_center_points_jittered,
     #     direction_mode,
     #     parameters.perimeter_count,
@@ -273,6 +274,8 @@ def run():
     str_tmp = f"Align sines started"
     cglib.fdm_aa.write_str_in_file_and_print(str_tmp, log_file)
     start = time.perf_counter()
+    # DEBUG
+    # grid_sines_aligned: cglib.point_data.GridPointData = cglib.sine_wave.multigrid_align(int(shape_domain_grid_sqr.cell_ndcount[0]), grid_sines, nozzle_width_derived_param.frequency, 32, True)
     grid_sines_aligned: cglib.point_data.GridPointData = \
         compiled_functions.sine_wave_multigrid_align(
             grid_sines, nozzle_width_derived_param.frequency)
