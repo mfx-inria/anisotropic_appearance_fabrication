@@ -10,12 +10,13 @@ authors = [
 ]
 description = "Computer Graphics Library"
 readme = "README.md"
-requires-python = ">=3.9, <3.11"
+requires-python = ">=3.10,<3.11"
 keywords = ["graphics", "fabrication"]
 license = {file = "LICENSE"}
 dependencies = [
-    "jax",
-    "svgpathtools",
-    "pyvista",
-    "Pillow",
+    "jax==0.6.2",
+    "jaxlib==0.6.2",
+    "svgpathtools~=1.6",
+    "pyvista~=0.39",
+    "Pillow~=9.5",
 ]
