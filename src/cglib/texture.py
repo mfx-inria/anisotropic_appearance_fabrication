@@ -147,7 +147,7 @@ def image_create_from_png_1channel_8bits(
         Each texel contains one float representing a scalar between 0 and 1.
     """
     im = PILImage.open(filename)
-    pix = np.array(im).astype(np.float_) / 255.
+    pix = np.array(im).astype(np.float32) / 255.
     return jax.device_put(Image(pix, wrap_mode), device)
 
 
