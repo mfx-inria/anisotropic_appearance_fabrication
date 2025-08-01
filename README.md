@@ -57,33 +57,20 @@ git submodule update --init --recursive
 ## Install Python Module Dependencies
 
 The code is written in Python 3.10, and it depends on
-- [JAX](https://github.com/google/jax) 0.3.17,
+- [JAX](https://github.com/google/jax) 0.6.2,
 - [svgpathtools](https://github.com/mathandy/svgpathtools) 1.6,
 - [pyvista](https://github.com/pyvista/pyvista) 0.39,
 - [Pillow](https://github.com/python-pillow/Pillow) 9.5, and
 - the local library [`src/cglib`](src/cglib).
 
-The versions specified before were used for producing the paper's results. The code may not work with Python < 3.10. A test with Python 3.6.8 was unsuccessful because `pip install --user -e .`` required a `setuptools`` version >= 64, and Python 3.6.8 only supports setuptools 59.6.0 at most.
-
-You can use `pip` to install the dependencies. The following commands should be run from the repository root directory:
+We recommend the usage of conda via [miniconda](https://www.anaconda.com/download/success) to have independant python environments. To install, run from the repository root directory:
 ```
-pip install --user --upgrade pip
-pip install --user --upgrade "jax[cpu]"
-pip install --user svgpathtools pyvista Pillow
-pip install --user -e .
+conda create --name aniso python=3.10
+conda activate aniso
+pip install -e .
 ```
 
-The most challenging dependency to install is [JAX](https://github.com/google/jax) *if you want GPU support*. Please read its [installation section](https://github.com/google/jax#installation) for more information. The code was developed on Windows 10, with GPU support (see [`INSTALL_WIN10_GPU.txt`](INSTALL_WIN10_GPU.txt) for installation details).
-
-### Conda
-
-For Conda users, you can try
-```
-conda env create -f environment.yml
-conda activate fdm_aa
-pip install --user -e .
-```
-to install the Python environment. On Windows, it did not work on our machine, but it works on Mac.
+To install [JAX](https://github.com/google/jax) with the GPU support, please read its [installation section](https://github.com/google/jax#installation) for more information. The code was developed on Windows 10, with GPU support (see [`INSTALL_WIN10_GPU.txt`](INSTALL_WIN10_GPU.txt) for installation details).
 
 # Results Reproduction
 
