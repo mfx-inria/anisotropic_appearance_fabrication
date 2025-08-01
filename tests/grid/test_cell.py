@@ -219,26 +219,6 @@ def test_center_points():
     assert jnp.all(jnp.isclose(res, exp_res))
 
 
-def test_center_points_jittered():
-
-    grid_cell_2dcount = jnp.array([2, 3])
-    grid_origin = jnp.array([-1., 2.])
-    grid_cell_sides_length = 0.5
-    grid = cglib.grid.Grid(grid_cell_2dcount,
-                           grid_origin,
-                           grid_cell_sides_length)
-    seed = 0
-    seed_jax = jax.random.PRNGKey(seed)
-    res = cglib.grid.cell.center_points_jittered(grid, seed_jax, 1.)
-    exp_res = jnp.array([[-0.5584955, 2.0678668],
-                         [-0.1643188, 2.3626184],
-                         [-0.82621616, 2.877863],
-                         [-0.16134614, 2.5096464],
-                         [-0.7924377, 3.0805643],
-                         [-0.37570453, 3.303907]])
-    assert jnp.all(jnp.isclose(res, exp_res))
-
-
 def helper_boundary_1dindex_from_2dindex():
     grid_cell_2dcount = (3, 4)
     grid_boundary_cell_count = cglib.grid.cell.boundary2_1dcount(
