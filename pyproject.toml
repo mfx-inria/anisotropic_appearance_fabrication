@@ -17,6 +17,6 @@ dependencies = [
     "jax==0.6.2",
     "jaxlib==0.6.2",
     "svgpathtools~=1.6",
-    "pyvista~=0.39",
+    "pyvista~=0.40",
     "Pillow~=9.5",
 ]
