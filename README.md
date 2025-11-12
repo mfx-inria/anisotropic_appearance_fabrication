@@ -20,6 +20,8 @@ Our code has the Replicability Stamp:
 
 [![](https://www.replicabilitystamp.org/logo/Reproducibility-small.png)](http://www.replicabilitystamp.org#https-github-com-mfx-inria-anisotropic-appearance-fabrication)
 
+**2025 update**: The code now integrates an improved version of trajectory alignment (`sine_wave.py:change_phase_to_align_i_with_j_nd` vs. `sine_wave.py:change_phase_to_align_i_with_j_nd_sig2023`). To revert to the previous implementation, please use the `sig2023` tag.
+
 # Fill Space With Orientable Cycle - Our Algorithm
 
 ![Overview image](data/png/doc/overview.png)
