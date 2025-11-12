@@ -80,6 +80,8 @@ class Parameters:
         path_tail_wo_ext = os.path.splitext(path_tail)[0]
         self.scalar_field_filename = path_head + '/np/' + \
             path_tail_wo_ext + '_scalar_field.npy'
+        self.width_filename = path_head + '/np/' + \
+            path_tail_wo_ext + '_width.txt'
         self.grid_sines_aligned_filename = path_head + '/np/' + \
             path_tail_wo_ext + '_grid_sines_aligned.npz'
         self.contour_graph_filename = path_head + '/np/' + \

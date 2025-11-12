@@ -79,7 +79,7 @@ def change_phase_to_align_i_with_j_1d(
     return jnp.where(inv_d, -distance + jnp.pi, distance)
 
 
-def change_phase_to_align_i_with_j_nd(
+def change_phase_to_align_i_with_j_nd_sig2023(
         sine_j: PointData,
         p_i: jnp.ndarray,
         d_i: jnp.ndarray,
@@ -115,6 +115,24 @@ def change_phase_to_align_i_with_j_nd(
     p_i_proj = jnp.vdot(p_i - sine_j_p, sine_j_d)
     phi_i = change_phase_to_align_i_with_j_1d(p_i_proj, sine_j_phi, f, inv_d)
     return phi_i
+
+
+def change_phase_to_align_i_with_j_nd(
+        sine_j: PointData,
+        p_i: jnp.ndarray,
+        d_i: jnp.ndarray,
+        f: float) -> float:
+    sine_j_p, sine_j_d, sine_j_phi = unpack_data(sine_j)
+    is_inv = jnp.where(jnp.vdot(sine_j_d, d_i) < 0., True, False)
+
+    p_ij = (p_i + sine_j_p) * 0.5
+    a = math.TWO_PI * f * jnp.vdot(d_i, p_ij - p_i)
+    b = math.TWO_PI * f * jnp.vdot(sine_j_d, p_ij - sine_j_p) + sine_j_phi
+    phase_i = b - a
+    phase_i_inv = jnp.pi - b - a
+    phase_i = jnp.where(is_inv, phase_i_inv, phase_i)
+    return phase_i
+
 
 
 def change_phase_to_align_with_others(

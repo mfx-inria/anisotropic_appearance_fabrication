@@ -562,11 +562,17 @@ def run():
     # Slice to remove most of the nan.
     polyline_point_radius = polyline_point_radius[
         :,:point_count_per_polyline_max]
+    polyline_point_width = polyline_point_radius.ravel() * 2.0
+    print(f"Trajectory width mean: {np.mean(polyline_point_width):.4f}")
+    print(f"Trajectory width standard deviation: {np.std(polyline_point_width):.4f}")
+    print(f"Widths save at {parameters.width_filename}")
+    np.savetxt(parameters.width_filename, polyline_point_width, fmt="%.4f")
     # Clamp radius
     polyline_point_radius = np.minimum(polyline_point_radius, np.full_like(
         polyline_point_radius, nozzle_width_derived_param.max_radius))
     polyline_point_radius = np.maximum(polyline_point_radius, np.full_like(
         polyline_point_radius, nozzle_width_derived_param.min_radius))
+    
     
     cycle_data_final = point_count_per_polyline.reshape((-1, 1))
     cycle_data_final = np.concatenate(
